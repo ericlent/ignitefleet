@@ -14,7 +14,7 @@ export default function App() {
 
   if (!fontsLoaded) {
     return (
-      < Loading />
+      <Loading />
     );
   }
 
