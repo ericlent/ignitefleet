@@ -40,10 +40,7 @@ export class Historic extends Realm.Object<Historic> {
       },
       license_plate: 'string',
       description: 'string',
-      coords: {
-        type: 'list',
-        objectType: 'Coords'
-      },
+
       status: 'string',
       created_at: 'date',
       updated_at: 'date'
