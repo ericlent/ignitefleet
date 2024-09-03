@@ -49,6 +49,7 @@ export function Home() {
                     created: dayjs(item.created_at).format('[Saída em] DD/MM/YYYY [às] HH:mm')
                 });
             });
+
             setVehicleHistoric(formattedHistoric);
 
         } catch (error) {
