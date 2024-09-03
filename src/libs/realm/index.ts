@@ -18,5 +18,6 @@ export const {
     useQuery,
     useObject
 } = createRealmContext({
-    schema: [Historic]
+    schema: [Historic],
+    schemaVersion: 1
 });

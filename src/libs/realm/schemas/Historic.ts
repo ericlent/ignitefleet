@@ -8,7 +8,7 @@ type GenerateProps = {
 }
 
 export class Historic extends Realm.Object<Historic> {
-  _id!: string
+  _id!: object
   user_id!: string
   license_plate!: string;
   description!: string;

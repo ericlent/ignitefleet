@@ -1,4 +1,4 @@
-import 'react-native-get-random-values'
+import 'react-native-get-random-values';
 import { ThemeProvider } from "styled-components/native";
 import { useFonts, Roboto_400Regular, Roboto_700Bold } from "@expo-google-fonts/roboto";
 import { SignIn } from "./src/screens/SignIn";
