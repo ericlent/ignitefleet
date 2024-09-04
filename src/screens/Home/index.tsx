@@ -64,6 +64,8 @@ export function Home() {
         navigate('arrival', { id })
     }
 
+    
+
     useEffect(() => {
         fetchVehicleInUse();
     }, []);
