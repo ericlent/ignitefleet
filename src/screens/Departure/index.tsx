@@ -168,6 +168,7 @@ export function Departure() {
               onPress={handleDepartureRegister}
               isLoading={isRegistering}
             />
+            
           </Content>
         </ScrollView>
       </KeyboardAwareScrollView>
