@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Container, Content, Description, Footer, Label, LicensePlate } from './styles';
+import { AsyncMessage, Container, Content, Description, Footer, Label, LicensePlate } from './styles';
 import { Header } from '../../components/Header';
 import { Button } from '../../components/Button';
 import { ButtonIcon } from '../../components/ButtonIcon';
@@ -8,12 +8,15 @@ import { useObject, useRealm } from '../../libs/realm';
 import { Historic } from '../../libs/realm/schemas/Historic';
 import { BSON } from 'realm';
 import { Alert } from 'react-native';
+import { useEffect, useState } from 'react';
+import { getLastAsyncTimestamp } from '../../libs/asyncStorage/syncStorage';
 
 type RouteParamProps = {
     id: string;
 }
 
 export function Arrival() {
+    const [dataNotSynced, setDataNotSynced] = useState(false);
     const route = useRoute();
     const { id } = route.params as RouteParamProps;
 
@@ -62,6 +65,10 @@ export function Arrival() {
         goBack();
     }
 
+    useEffect(() => {
+        getLastAsyncTimestamp().then(lastSync => setDataNotSynced(historic!.updated_at.getTime() > lastSync));
+    }, [])
+
     return (
         <Container>
             <Header title={title} />
@@ -98,6 +105,14 @@ export function Arrival() {
                     />
                 </Footer>
             }
+
+            {
+                dataNotSynced &&
+                <AsyncMessage>
+                    Sincronização da {historic?.status === 'departure' ? "partida" : "chegada"} pendente
+                </AsyncMessage>
+            }
+
         </Container>
     );
 }
