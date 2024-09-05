@@ -10,12 +10,13 @@ import { Historic } from '../../libs/realm/schemas/Historic';
 import { useUser } from '@realm/react';
 import { useNavigation } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { LocationAccuracy, LocationSubscription, useForegroundPermissions, watchPositionAsync } from 'expo-location';
+import { LocationAccuracy, LocationObjectCoords, LocationSubscription, useForegroundPermissions, watchPositionAsync } from 'expo-location';
 import { licensePlateValidate } from '../../utils/licensePlateValidate';
 import { getAddressLocation } from '../../utils/getAddressLocation';
 import { Loading } from '../../components/Loading';
 import { LocationInfo } from '../../components/LocationInfo';
 import { Car } from 'phosphor-react-native';
+import { Map } from '../../components/Map';
 
 //Alternativa para tratar o posicionamento do Keyboard
 //const keyboardAvoidingViewBehavior = Platform.OS === 'android' ? 'height' : 'position';
@@ -26,6 +27,7 @@ export function Departure() {
   const [isRegistering, setIsResgistering] = useState(false);
   const [currentAddress, setCurrentAddress] = useState<string | null>(null)
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+  const [currentCoords, setCurrentCoords] = useState<LocationObjectCoords | null>(null);
 
   const [locationForegroundPermission, requestLocationForegroundPermission] = useForegroundPermissions();
 
@@ -84,6 +86,8 @@ export function Departure() {
       accuracy: LocationAccuracy.High,
       timeInterval: 1000
     }, (location) => {
+      setCurrentCoords(location.coords);
+
       getAddressLocation(location.coords)
         .then(address => {
           if (address) {
@@ -127,6 +131,8 @@ export function Departure() {
       {/* <KeyboardAvoidingView behavior={keyboardAvoidingViewBehavior}> */}
       <KeyboardAwareScrollView extraHeight={100}>
         <ScrollView>
+          {currentCoords && <Map coordinates={[currentCoords]} />}
+
           <Content>
 
             {
