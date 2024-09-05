@@ -1,3 +1,8 @@
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+module.exports =
 {
   "expo": {
     "name": "ignitefleet",
@@ -13,14 +18,20 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.equal.ignitefleet"
+      "bundleIdentifier": "com.equal.ignitefleet",
+      "config": {
+        "googleMapsApiKey": process.env.GOOGLE_MAPS_API_KEY
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#202024"
       },
-      "package": "com.equal.ignitefleet"
+      "package": "com.equal.ignitefleet",
+      "googleMaps": {
+        "apiKey": process.env.GOOGLE_MAPS_API_KEY
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
