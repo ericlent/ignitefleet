@@ -10,13 +10,14 @@ import { Historic } from '../../libs/realm/schemas/Historic';
 import { useUser } from '@realm/react';
 import { useNavigation } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { LocationAccuracy, LocationObjectCoords, LocationSubscription, useForegroundPermissions, watchPositionAsync } from 'expo-location';
+import { LocationAccuracy, LocationObjectCoords, LocationSubscription, requestBackgroundPermissionsAsync, useForegroundPermissions, watchPositionAsync } from 'expo-location';
 import { licensePlateValidate } from '../../utils/licensePlateValidate';
 import { getAddressLocation } from '../../utils/getAddressLocation';
 import { Loading } from '../../components/Loading';
 import { LocationInfo } from '../../components/LocationInfo';
 import { Car } from 'phosphor-react-native';
 import { Map } from '../../components/Map';
+import { startLocationTask } from '../../tasks/backgroundLocationTask';
 
 //Alternativa para tratar o posicionamento do Keyboard
 //const keyboardAvoidingViewBehavior = Platform.OS === 'android' ? 'height' : 'position';
@@ -50,11 +51,23 @@ export function Departure() {
         return Alert.alert('Finalidade', 'Por favor, informe a finalidade da utilização do veículo')
       }
 
-      if(!currentCoords?.latitude && !currentCoords?.longitude) {
+      if (!currentCoords?.latitude && !currentCoords?.longitude) {
         return Alert.alert('Localização', 'Não foi possível obter a localização atual. Tente novamente.')
       }
 
       setIsResgistering(true);
+
+      const backgroundPermissions = await requestBackgroundPermissionsAsync();
+
+      if (!backgroundPermissions.granted) {
+        setIsResgistering(false)
+        return Alert.alert(
+          'Localização',
+          'É necessário permitir que o App tenha acesso localização em segundo plano. Acesse as configurações do dispositivo e habilite "Permitir o tempo todo."'
+        )
+      }
+
+      await startLocationTask();
 
       realm.write(() => {
         realm.create('Historic', Historic.generate({
@@ -172,7 +185,7 @@ export function Departure() {
               onPress={handleDepartureRegister}
               isLoading={isRegistering}
             />
-            
+
           </Content>
         </ScrollView>
       </KeyboardAwareScrollView>
