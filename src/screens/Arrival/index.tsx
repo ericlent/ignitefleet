@@ -16,6 +16,7 @@ import { LocationInfoProps } from '../../components/LocationInfo';
 import { getAddressLocation } from '../../utils/getAddressLocation';
 import { getStorageLocations } from '../../libs/asyncStorage/locationStorage';
 import { Map } from '../../components/Map';
+import { Locations } from '../../components/Locations';
 
 type RouteParamProps = {
     id: string;
@@ -54,9 +55,12 @@ export function Arrival() {
                 return Alert.alert('Erro', 'Não foi possível obter os dados para registrar a chegada do veículo.');
             }
 
+            const locations = await getStorageLocations();
+
             realm.write(() => {
                 historic.status = 'arrival';
                 historic.updated_at = new Date();
+                historic.coords.push(...locations);
             });
 
             await stopLocationTask();
@@ -75,7 +79,7 @@ export function Arrival() {
         });
 
         await stopLocationTask();
-        
+
         goBack();
     }
 
@@ -89,9 +93,18 @@ export function Arrival() {
         const updatedAt = historic!.updated_at.getTime();
         setDataNotSynced(updatedAt > lastSync);
 
-        const locationsStorage = await getStorageLocations();
-        console.log(locationsStorage);
-        setCoordinates(locationsStorage);
+        if (historic?.status === 'departure') {
+            const locationsStorage = await getStorageLocations();
+            setCoordinates(locationsStorage);
+        } else {
+            const coords = historic?.coords.map((coord) => {
+                return {
+                    latitude: coord.latitude,
+                    longitude: coord.longitude
+                }
+            })
+            setCoordinates(coords ?? []);
+        }
 
         setIsLoading(false)
     }
@@ -107,6 +120,11 @@ export function Arrival() {
             {coordinates.length > 0 && <Map coordinates={coordinates} />}
 
             <Content>
+
+                <Locations
+                    departure={{ label: "Saída", description: "Saída Teste" }}
+                    arrival={{ label: "Chegada", description: "Chegada Teste" }}
+                />
                 <Label>
                     Placa do veículo
                 </Label>
