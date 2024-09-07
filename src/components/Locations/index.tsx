@@ -7,7 +7,7 @@ type Props = {
     arrival?: LocationInfoProps | null
 }
 
-export function Locations({ arrival = null, departure }: Props) {
+export function Locations({ departure, arrival = null }: Props) {
     return (
         <Container>
             <LocationInfo

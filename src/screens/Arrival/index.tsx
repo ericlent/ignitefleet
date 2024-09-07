@@ -17,6 +17,8 @@ import { getAddressLocation } from '../../utils/getAddressLocation';
 import { getStorageLocations } from '../../libs/asyncStorage/locationStorage';
 import { Map } from '../../components/Map';
 import { Locations } from '../../components/Locations';
+import dayjs from 'dayjs';
+import { Loading } from '../../components/Loading';
 
 type RouteParamProps = {
     id: string;
@@ -106,12 +108,35 @@ export function Arrival() {
             setCoordinates(coords ?? []);
         }
 
+        if (historic?.coords[0]) {
+            const departureStreetName = await getAddressLocation(historic?.coords[0]);
+
+            setDeparture({
+                label: `Saíndo em ${departureStreetName ?? ''}`,
+                description: dayjs(new Date(historic?.coords[0].timestamp)).format('DD/MM/YYYY [às] HH:mm')
+            })
+        }
+
+        if (historic?.status === 'arrival') {
+            const lastLocation = historic.coords[historic.coords.length - 1];
+            const arrivalStreetName = await getAddressLocation(lastLocation);
+
+            setArrival({
+                label: `Chegando em ${arrivalStreetName ?? ''}`,
+                description: dayjs(new Date(lastLocation.timestamp)).format('DD/MM/YYYY [às] HH:mm')
+            })
+        }
+
         setIsLoading(false)
     }
 
     useEffect(() => {
         getLocationsInfo();
     }, [historic]);
+
+    if (isLoading) {
+        return <Loading />
+    }
 
     return (
         <Container>
@@ -122,8 +147,8 @@ export function Arrival() {
             <Content>
 
                 <Locations
-                    departure={{ label: "Saída", description: "Saída Teste" }}
-                    arrival={{ label: "Chegada", description: "Chegada Teste" }}
+                    departure={departure}
+                    arrival={arrival}
                 />
                 <Label>
                     Placa do veículo
